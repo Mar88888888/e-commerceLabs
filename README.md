@@ -51,11 +51,11 @@ npm run build && npm run start:prod
 curl -i localhost:3000/health
 ```
 
-![alt text](image.png)
+![Health 200](docs/images/health-200.png)
 
 **Відповідь 503 (БД недоступна):**
 
-![alt text](image-1.png)
+![Health 503](docs/images/health-503.png)
 
 ---
 
@@ -80,7 +80,7 @@ curl -i localhost:3000/health
 {"level":"INFO","timestamp":"2026-02-17T15:23:26.980Z","pid":1320,"hostname":"PKWIN11","req":{"id":4,"method":"GET","url":"/fdc-api/matches","query":{},"params":{"0":"matches"}},"res":{"statusCode":200},"responseTime":14831,"msg":"request completed"}
 ```
 
-![alt text](image-2.png)
+![Graceful Shutdown](docs/images/graceful-shutdown.png)
 
 ---
 
