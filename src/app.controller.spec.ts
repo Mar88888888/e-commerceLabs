@@ -10,6 +10,8 @@ describe('AppController', () => {
   let mockCacheManager: { get: jest.Mock; set: jest.Mock };
 
   beforeEach(async () => {
+    jest.useFakeTimers();
+
     mockDataSource = {
       query: jest.fn(),
     };
@@ -29,6 +31,11 @@ describe('AppController', () => {
     }).compile();
 
     appService = app.get<AppService>(AppService);
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   describe('GET /health', () => {
