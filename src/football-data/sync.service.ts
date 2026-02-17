@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BeforeApplicationShutdown } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { FootballJobType } from './football-data.types';
 import { FootballDataService } from './football-data.service';
@@ -13,13 +13,19 @@ const POPULAR_COMPETITIONS = [
 ];
 
 @Injectable()
-export class SyncService {
+export class SyncService implements BeforeApplicationShutdown {
   private readonly logger = new Logger(SyncService.name);
+  private isShuttingDown = false;
 
   constructor(private readonly dataService: FootballDataService) {}
 
+  beforeApplicationShutdown(): void {
+    this.isShuttingDown = true;
+  }
+
   @Cron('*/15 * * * *')
   async syncTodayMatches(): Promise<void> {
+    if (this.isShuttingDown) return;
     this.logger.log('Sync: today matches');
 
     const today = new Date();
@@ -40,6 +46,7 @@ export class SyncService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async syncStandings(): Promise<void> {
+    if (this.isShuttingDown) return;
     this.logger.log('Sync: standings for popular competitions');
 
     for (const competitionId of POPULAR_COMPETITIONS) {
@@ -60,6 +67,7 @@ export class SyncService {
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async syncCompetitions(): Promise<void> {
+    if (this.isShuttingDown) return;
     this.logger.log('Sync: competition info');
 
     for (const competitionId of POPULAR_COMPETITIONS) {
@@ -80,6 +88,7 @@ export class SyncService {
 
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async syncAvailableCompetitions(): Promise<void> {
+    if (this.isShuttingDown) return;
     this.logger.log('Sync: available competitions list');
 
     try {
