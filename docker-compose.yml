@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
     image: postgres:15-alpine
     container_name: football_postgres
     restart: unless-stopped
@@ -11,6 +11,15 @@ services:
       POSTGRES_DB: ${DB_NAME:-football-datacenter}
     ports:
       - '5433:5432'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-football-datacenter}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -24,21 +33,29 @@ services:
       - redis_data:/data
     command: redis-server --save 60 1 --loglevel warning
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: football_pgadmin
+  app:
+    build: .
+    container_name: app
     restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
     ports:
-      - '5050:80'
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - '8080:3000'
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-football-datacenter}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=3000
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - LOG_LEVEL=info
     depends_on:
-      - postgres
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
 volumes:
   postgres_data:
   redis_data:
-  pgadmin_data:
