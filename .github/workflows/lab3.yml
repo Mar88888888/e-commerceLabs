@@ -14,6 +14,11 @@ jobs:
         with:
           cluster_name: kind
 
+      - name: Load image into KinD
+        run: |
+          docker pull ghcr.io/mar88888888/ecommerce-app:latest
+          kind load docker-image ghcr.io/mar88888888/ecommerce-app:latest --name kind
+
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/config.yaml
