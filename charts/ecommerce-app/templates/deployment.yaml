@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-app
+spec:
+  # prettier-ignore
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: ecommerce-app
+  template:
+    metadata:
+      labels:
+        app: ecommerce-app
+    spec:
+      containers:
+        - name: ecommerce-app
+          image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+          ports:
+            - containerPort: 3000
+          # prettier-ignore
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: ecommerce-secret
+            - configMapRef:
+                name: ecommerce-config
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
