@@ -1,0 +1,22 @@
+name: Lab 4 Helm Deployment
+
+on: ['push']
+
+jobs:
+  helm-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: 'latest'
+
+      - name: Run Lab 4 Grading Script
+        run: |
+          # Надаємо права на виконання скрипту
+          chmod +x ./tests/lab4_test.sh
+          # Запускаємо скрипт
+          ./tests/lab4_test.sh
