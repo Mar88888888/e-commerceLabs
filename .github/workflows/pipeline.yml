@@ -1,8 +1,6 @@
 name: Lab 2 Pipeline
 
-on:
-  push:
-    branches: ['main']
+on: ['push']
 
 permissions:
   contents: read
