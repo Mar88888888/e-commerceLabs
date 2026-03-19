@@ -27,14 +27,9 @@
 # Встановлення залежностей
 npm install
 
-# Запуск БД (PostgreSQL + Redis)
+# Запуск БД (PostgreSQL + Redis) та app
 docker-compose up -d
 
-# Запуск в режимі розробки
-npm run start:dev
-
-# Запуск в production режимі
-npm run build && npm run start:prod
 ```
 
 ---
