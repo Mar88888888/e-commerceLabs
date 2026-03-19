@@ -39,7 +39,7 @@ async function bootstrap() {
       level: 'INFO',
       timestamp,
       context: 'Shutdown',
-      msg: `${signal} received. Starting graceful shutdown...`,
+      msg: `${signal} signal received. Starting graceful shutdown...`,
     };
     console.log(JSON.stringify(msg));
 
